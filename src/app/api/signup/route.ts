@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (!webhookSecret) {
     return NextResponse.json(
       { error: "Missing webhook secret" },
-      { status: 500 },
+      { status: 500 },  
     );
   }
 
