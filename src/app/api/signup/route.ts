@@ -1,7 +1,6 @@
 import { Webhook } from "svix";
-import prisma from "@/app/lib/prisma";
+import { createPrismClient } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
 type Event = {
   type: string;
   data: {
@@ -11,8 +10,8 @@ type Event = {
     email_addresses: { email_address: string }[];
   };
 };
-
 export async function POST(req: NextRequest) {
+  const prisma = createPrismClient();
   const webhookSecret = process.env.CLERK_WEBHOOK_KEY;
 
   if (!webhookSecret) {

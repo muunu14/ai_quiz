@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client/extension";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.PRISMA_DATABASE_URL,
-});
+export const createPrismClient = () => {
+  const adapter = new PrismaPg({
+    connectionString: process.env.PRISMA_DATABASE_URL,
+  });
 
-const prisma = new PrismaClient({
-  adapter,
-});
-
-export default prisma;
+  return new PrismaClient({
+    adapter,
+  });
+};
