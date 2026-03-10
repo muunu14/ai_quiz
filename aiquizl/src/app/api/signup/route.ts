@@ -1,5 +1,5 @@
 import { Webhook } from "svix";
-import { createPrismClient } from "@/app/lib/prisma";
+import { createPrismaClient } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 type Event = {
   type: string;
@@ -11,16 +11,15 @@ type Event = {
   };
 };
 export async function POST(req: NextRequest) {
-  const prisma = createPrismClient();
+  const prisma = createPrismaClient();
   const webhookSecret = process.env.CLERK_WEBHOOK_KEY;
 
   if (!webhookSecret) {
     return NextResponse.json(
       { error: "Missing webhook secret" },
-      { status: 500 },  
+      { status: 500 },
     );
   }
-
   const svixId = req.headers.get("svix-id");
   const svixTimestamp = req.headers.get("svix-timestamp");
   const svixSgnature = req.headers.get("svix-signature");
