@@ -18,7 +18,6 @@ model User {
   quizAttempts QuizAttempt[]
   userScores   UserScore[]
 }
-
 model Article {
   id        String   @id @default(cuid())
   title     String

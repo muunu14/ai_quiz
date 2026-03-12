@@ -33,7 +33,6 @@ export default function QuizHistory({
 }: QuizHistoryProps) {
   const router = useRouter();
 
-  // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString() + " " + date.toLocaleTimeString();
@@ -85,18 +84,18 @@ export default function QuizHistory({
           ))}
         </div>
       ) : (
-        <div className="text-center py-4">
+        <div className="py-4 text-center">
           <p>No previous scores found.</p>
         </div>
       )}
 
       <div className="flex justify-end gap-4 mt-6">
         <Button variant="outline" onClick={onRestart}>
-          <RefreshCw className="h-4 w-4 mr-2" />
+          <RefreshCw className="w-4 h-4 mr-2" />
           Take Quiz Again
         </Button>
         <Button onClick={onGoHome}>
-          <Home className="h-4 w-4 mr-2" />
+          <Home className="w-4 h-4 mr-2" />
           Go to Home
         </Button>
       </div>

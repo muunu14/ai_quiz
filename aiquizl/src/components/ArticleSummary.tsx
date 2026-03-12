@@ -13,12 +13,24 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { createPrismaClient } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
 interface ArticleSummaryProps {
   articleId: string;
   summary: string;
 }
-
+export async function SignInButton(req: NextRequest) {}
+export async function name(req: NextRequest) {
+  const prisma = createPrismaClient();
+  const webhookSecret = process.env.CLERK_WEBHOOK_KEY;
+  if (!webhookSecret) {
+    return NextResponse.json(
+      { error: "Missing webhook secret" },
+      { status: 500 },
+    );
+  }
+}
 export default function ArticleSummary({
   articleId,
   summary,
@@ -77,7 +89,7 @@ export default function ArticleSummary({
         <Button onClick={handleGenerateQuiz} disabled={isLoading}>
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               Generating Quiz...
             </>
           ) : (

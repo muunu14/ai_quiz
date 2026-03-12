@@ -23,7 +23,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
-
 interface Question {
   id: string;
   articleId: string;
@@ -67,7 +66,7 @@ export default function QuizPage() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout>();
 
-  // Fetch article and quiz data
+
   useEffect(() => {
     const fetchArticle = async () => {
       try {
@@ -79,10 +78,7 @@ export default function QuizPage() {
         }
 
         const data = await response.json();
-
-        // Check if article has quizzes
         if (!data.quizzes || data.quizzes.length === 0) {
-          // Generate quizzes if none exist
           const quizResponse = await fetch("/api/generate", {
             method: "POST",
             headers: {
@@ -96,8 +92,6 @@ export default function QuizPage() {
           }
 
           const quizData = await quizResponse.json();
-
-          // Save quizzes to database
           const saveResponse = await fetch(
             `/api/articles/${params.id}/quizzes`,
             {
@@ -106,14 +100,12 @@ export default function QuizPage() {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ quizzes: quizData.quizzes }),
-            }
+            },
           );
 
           if (!saveResponse.ok) {
             throw new Error("Failed to save quiz");
           }
-
-          // Fetch updated article with quizzes
           const updatedResponse = await fetch(`/api/articles/${params.id}`);
           const updatedData = await updatedResponse.json();
           setArticle(updatedData);
@@ -130,8 +122,6 @@ export default function QuizPage() {
 
     fetchArticle();
   }, [params.id]);
-
-  // Fetch previous scores
   useEffect(() => {
     const fetchPreviousScores = async () => {
       if (!article) return;
@@ -152,29 +142,22 @@ export default function QuizPage() {
 
     fetchPreviousScores();
   }, [article]);
-
-  // Start timer when quiz begins
   useEffect(() => {
     if (article && !showResults) {
       setStartTime(Date.now());
     }
   }, [article, showResults]);
-
-  // Calculate time spent
   const getTimeSpent = () => {
     if (!startTime) return 0;
-    return Math.floor((Date.now() - startTime) / 1000); // Convert to seconds
+    return Math.floor((Date.now() - startTime) / 1000);
   };
 
-  // Handle answer selection
   const handleAnswerSelect = (questionId: string, optionIndex: number) => {
     setSelectedAnswers((prev) => ({
       ...prev,
       [questionId]: optionIndex,
     }));
   };
-
-  // Handle next question or finish quiz
   const handleNextQuestion = () => {
     if (!article || !article.quizzes || article.quizzes.length === 0) return;
 
@@ -185,8 +168,6 @@ export default function QuizPage() {
       calculateScore();
     }
   };
-
-  // Calculate final score
   const calculateScore = () => {
     if (!article || !article.quizzes || article.quizzes.length === 0) return;
 
@@ -200,12 +181,10 @@ export default function QuizPage() {
     });
 
     const finalScore = Math.round(
-      (correctAnswers / article.quizzes.length) * 100
+      (correctAnswers / article.quizzes.length) * 100,
     );
     setScore(finalScore);
   };
-
-  // Save score to database
   const handleSubmitScore = async () => {
     if (
       !article ||
@@ -233,8 +212,6 @@ export default function QuizPage() {
       if (!response.ok) {
         throw new Error("Failed to save score");
       }
-
-      // Fetch updated scores
       const scoresResponse = await fetch(`/api/scores?articleId=${article.id}`);
       if (scoresResponse.ok) {
         const data = await scoresResponse.json();
@@ -251,7 +228,6 @@ export default function QuizPage() {
     }
   };
 
-  // Restart quiz
   const handleRestartQuiz = () => {
     setCurrentQuestionIndex(0);
     setSelectedAnswers({});
@@ -260,26 +236,22 @@ export default function QuizPage() {
     setShowPreviousScores(false);
   };
 
-  // Go back to home
   const handleGoHome = () => {
     router.push("/");
   };
 
-  // Toggle previous scores view
   const togglePreviousScores = () => {
     setShowPreviousScores(!showPreviousScores);
   };
 
-  // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
-  // Loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center p-8 min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen p-8 bg-gray-50">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="text-center">Loading quiz...</div>
@@ -289,10 +261,9 @@ export default function QuizPage() {
     );
   }
 
-  // Error state
   if (error || !article) {
     return (
-      <div className="flex justify-center items-center p-8 min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen p-8 bg-gray-50">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">Error</CardTitle>
@@ -308,10 +279,9 @@ export default function QuizPage() {
     );
   }
 
-  // Check if quiz exists
   if (!article.quizzes || article.quizzes.length === 0) {
     return (
-      <div className="flex justify-center items-center p-8 min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen p-8 bg-gray-50">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">No Quiz Available</CardTitle>
@@ -334,13 +304,13 @@ export default function QuizPage() {
   const isLastQuestion = currentQuestionIndex === article.quizzes.length - 1;
 
   return (
-    <div className="p-8 min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-3xl">
+    <div className="min-h-screen p-8 bg-gray-50">
+      <div className="max-w-3xl mx-auto">
         <div className="mb-6">
           <Button
             variant="outline"
             onClick={handleGoHome}
-            className="flex gap-2 items-center"
+            className="flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
@@ -408,17 +378,17 @@ export default function QuizPage() {
                       {article.quizzes.map((question, index) => {
                         const userAnswer = selectedAnswers[question.id];
                         const correctAnswer = parseInt(
-                          question.answer.toString()
+                          question.answer.toString(),
                         );
                         const isCorrect = userAnswer === correctAnswer;
 
                         return (
                           <div key={question.id} className="space-y-2">
-                            <div className="flex gap-2 items-start">
+                            <div className="flex items-start gap-2">
                               {isCorrect ? (
-                                <CheckCircle2 className="mt-1 w-5 h-5 text-green-500" />
+                                <CheckCircle2 className="w-5 h-5 mt-1 text-green-500" />
                               ) : (
-                                <XCircle className="mt-1 w-5 h-5 text-red-500" />
+                                <XCircle className="w-5 h-5 mt-1 text-red-500" />
                               )}
                               <div>
                                 <p className="font-medium">
@@ -439,9 +409,9 @@ export default function QuizPage() {
                         );
                       })}
                     </div>
-                    <div className="flex gap-4 justify-end">
+                    <div className="flex justify-end gap-4">
                       <Button variant="outline" onClick={handleRestartQuiz}>
-                        <RefreshCw className="mr-2 w-4 h-4" />
+                        <RefreshCw className="w-4 h-4 mr-2" />
                         Restart Quiz
                       </Button>
                       <Button
@@ -454,7 +424,7 @@ export default function QuizPage() {
                   </>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <h3 className="text-xl font-semibold">
                         Your Quiz History
                       </h3>
@@ -468,7 +438,7 @@ export default function QuizPage() {
                         {previousScores.map((score, index) => (
                           <div
                             key={score.id}
-                            className="flex justify-between items-center p-4 rounded-lg border"
+                            className="flex items-center justify-between p-4 border rounded-lg"
                           >
                             <div>
                               <p className="font-medium">
@@ -489,17 +459,17 @@ export default function QuizPage() {
                                     previousScores[index - 1].score
                                       ? "text-green-500"
                                       : score.score <
-                                        previousScores[index - 1].score
-                                      ? "text-red-500"
-                                      : "text-gray-500"
+                                          previousScores[index - 1].score
+                                        ? "text-red-500"
+                                        : "text-gray-500"
                                   }`}
                                 >
                                   {score.score > previousScores[index - 1].score
                                     ? "↑ Improved"
                                     : score.score <
-                                      previousScores[index - 1].score
-                                    ? "↓ Decreased"
-                                    : "→ Same"}
+                                        previousScores[index - 1].score
+                                      ? "↓ Decreased"
+                                      : "→ Same"}
                                 </p>
                               )}
                             </div>
@@ -512,13 +482,13 @@ export default function QuizPage() {
                       </div>
                     )}
 
-                    <div className="flex gap-4 justify-end mt-6">
+                    <div className="flex justify-end gap-4 mt-6">
                       <Button variant="outline" onClick={handleRestartQuiz}>
-                        <RefreshCw className="mr-2 w-4 h-4" />
+                        <RefreshCw className="w-4 h-4 mr-2" />
                         Take Quiz Again
                       </Button>
                       <Button onClick={handleGoHome}>
-                        <Home className="mr-2 w-4 h-4" />
+                        <Home className="w-4 h-4 mr-2" />
                         Go to Home
                       </Button>
                     </div>

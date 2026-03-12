@@ -13,7 +13,6 @@ type Event = {
 export async function POST(req: NextRequest) {
   const prisma = createPrismaClient();
   const webhookSecret = process.env.CLERK_WEBHOOK_KEY;
-
   if (!webhookSecret) {
     return NextResponse.json(
       { error: "Missing webhook secret" },
@@ -23,28 +22,21 @@ export async function POST(req: NextRequest) {
   const svixId = req.headers.get("svix-id");
   const svixTimestamp = req.headers.get("svix-timestamp");
   const svixSgnature = req.headers.get("svix-signature");
-
   if (!svixId || !svixTimestamp || !svixSgnature) {
     return NextResponse.json({ error: "Missing headers" }, { status: 400 });
   }
-
   const webhook = new Webhook(webhookSecret);
-
   const body = await req.text();
-
   try {
     const event = webhook.verify(body, {
       "svix-id": svixId,
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSgnature,
     }) as Event;
-
     if (event.type !== "user.created") {
       return NextResponse.json({ error: "Ignore event" }, { status: 400 });
     }
-
     const { email_addresses, first_name, last_name, id } = event.data;
-
     await prisma.user.create({
       data: {
         email: email_addresses[0].email_address,

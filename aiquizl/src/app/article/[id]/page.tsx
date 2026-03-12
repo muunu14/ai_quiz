@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ArrowLeft, BookOpen, FileText, Maximize2 } from "lucide-react";
-
 interface Article {
   id: string;
   title: string;
@@ -28,7 +26,6 @@ interface Article {
   summary: string;
   createdAt: string;
 }
-
 export default function ArticleDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -50,7 +47,6 @@ export default function ArticleDetailPage() {
 
     fetchArticle();
   }, [params.id]);
-
   const handleGoBack = () => {
     router.back();
   };
@@ -116,7 +112,6 @@ export default function ArticleDetailPage() {
                 </CardContent>
               </Card>
             </div>
-
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <h3 className="flex items-center gap-2 text-lg font-semibold">

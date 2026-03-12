@@ -1,18 +1,16 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import ArticleForm from "@/components/ArticleForm";
 import { toast } from "sonner";
-
+import { SignInButton } from "@/components/ArticleSummary";
 interface Article {
   id: string;
   title: string;
   summary: string;
   createdAt: string;
 }
-
 export default function Home() {
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
@@ -24,7 +22,6 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch articles for sidebar
     const fetchArticles = async () => {
       try {
         const response = await fetch("/api/articles");
@@ -74,7 +71,6 @@ export default function Home() {
     setLoading(true);
 
     try {
-      // Save article to database
       const saveResponse = await fetch("/api/articles", {
         method: "POST",
         headers: {
@@ -84,7 +80,7 @@ export default function Home() {
           title,
           content,
           summary,
-          quizzes: [], // Will be generated on the quiz page
+          quizzes: [],
         }),
       });
 
@@ -92,12 +88,10 @@ export default function Home() {
         const result = await saveResponse.json();
         toast.success("Article saved successfully!");
 
-        // Refresh articles list
         const response = await fetch("/api/articles");
         const data = await response.json();
         setArticles(data);
 
-        // Reset form
         setTitle("");
         setContent("");
         setSummary(null);
@@ -115,7 +109,6 @@ export default function Home() {
     setLoading(true);
 
     try {
-      // Save article and quizzes to database
       const saveResponse = await fetch("/api/articles", {
         method: "POST",
         headers: {
@@ -127,7 +120,7 @@ export default function Home() {
             content.substring(0, 50) + (content.length > 50 ? "..." : ""),
           content,
           summary,
-          quizzes: [], // Will be generated on the quiz page
+          quizzes: [],
         }),
       });
 
@@ -145,8 +138,8 @@ export default function Home() {
   return (
     <div className="flex">
       <Sidebar articles={articles} loading={articleLoading} />
-      <main className="flex-1 p-8 min-h-screen bg-gray-50">
-        <div className="mx-auto max-w-2xl">
+      <main className="flex-1 min-h-screen p-8 bg-gray-50">
+        <div className="max-w-2xl mx-auto">
           <ArticleForm
             title={title}
             content={content}
